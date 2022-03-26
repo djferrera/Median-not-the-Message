@@ -1,0 +1,1294 @@
+<!-- INFO-616 Final Project -->
+<!-- December 2021 -->
+<!-- When the median is not the message -->
+<!-- source: https://www.bls.gov/cex/tables.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Median not the Message</title>
+    <meta name="author" content="Diane Ferrera">
+    <meta name="project description" content="Pratt, INFO-616, MS, Data Visualization, Javascript, D3">
+
+    <!-- Mobile Specific Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- google fonts -->
+    <!-- font-family: 'Open Sans', sans-serif; font-family: 'Open Sans Condensed', sans-serif; -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,700&display=swap" rel="stylesheet">
+
+    <!-- css and for grid / ultimately did not need-->
+    <!-- <link rel="stylesheet" href="files/css/normalize.css">-->
+    <!-- <link rel="stylesheet" href="files/css/skeleton.css">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+
+    <!-- d3 -->
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+
+    <style type="text/css">
+        
+        /* CSS */
+        body {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 20%;
+            margin-top: 2%;
+            background-color: #d6dbdf;
+        }
+
+        .two.columns {
+            padding-bottom: 5%;
+        }
+
+        /* indent first quintile column */
+        #leftcol {
+            margin-left: 6.5%;
+        }
+
+        h1 {
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-size: 50px;
+            letter-spacing: 0;
+            font-weight: bold;
+            text-align: left;
+            color: #004463;
+            padding-top: 5%;
+            padding-bottom: 5%;
+            margin-left: 15%;
+        }
+
+        h2 {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 20px;
+            letter-spacing: .25px;
+            font-weight: normal;
+            text-align: left;
+            line-height: 160%;
+            color: #212f3c;
+            padding-top: 1%;
+            padding-bottom: 2%;
+            margin-left: 15%;
+        }
+
+        h3 {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            font-weight: normal;
+            letter-spacing: 0;
+            color: #15202b;
+            line-height: 160%;
+            text-align: left;
+            padding-top: .5%;
+            margin-left: 15%;
+            padding-bottom: 2%;
+        }
+
+        h4 {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            font-weight: lighter;
+            color: #1b2631;
+            line-height: 150%;
+            text-align: left;
+            letter-spacing: 1px;
+            padding-top: .5%;
+            margin-left: 15%;
+            padding-bottom: 0%;
+        }
+
+        h5 {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            font-weight: normal;
+            letter-spacing: 1px;
+            line-height: 150%;
+            color: #1b2631;
+            text-align: left;
+            padding-top: .5%;
+            margin-left: 15%;
+            padding-bottom: 0%;
+        }
+
+        .subtitle {
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: bolder;
+            color: #004463;
+            margin-left: 15%;
+            margin-bottom: -2%;
+        }
+
+        #vizHead {
+            font-size: 28px;
+            color: #004463;
+            font-weight: normal;
+        }
+
+        /* stacked areachart */
+        #area {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            margin-left: 15%;
+            padding-right: 25%;
+        }
+
+        #indent {
+            margin-left: 5.5%;
+        }
+
+        .x path {
+            opacity: 0;
+            /* remove */
+        }
+
+        .x .tick line {
+            opacity: 0;
+            /* remove */
+        }
+
+        .y path {
+            opacity: 0;
+            /* remove */
+        }
+
+        /* .y .tick line {
+            opacity: 0;
+        } */
+
+        .yTitle {
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-size: 16px;
+            font-weight: normal;
+            color: #34495e;
+        }
+
+        .x.label {
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-size: 9px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .y.label {
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-size: 9px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        #legend {
+            margin-top: 15%;
+            margin-left: 20%;
+        }
+
+        .legend_labels {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        img {
+            width: auto;
+            height: 200px;
+            margin-top: 320px;
+        }
+
+        #quint1,
+        #quint2,
+        #quint3,
+        #quint4,
+        #quint5 {
+            margin-left: -8%;
+        }
+
+        /* lowest 20 quntile detail */
+        #min {
+            margin-left: 0%;
+            margin-top: -8%;
+        }
+
+        /* highest 20 quntile detail */
+        #max {
+            margin-top: -8%;
+        }
+
+        /* tooltip for stacked area chart */
+        #tooltip1 {
+            position: absolute;
+            padding-left: 1%;
+            padding-right: 1%;
+            padding-top: .5%;
+            padding-bottom: .5%;
+            text-align: center;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 550;
+            line-height: 125%;
+            background: #d6dbdf;
+        }
+
+        /* tooltips for quintiles */
+        #tooltip2,
+        #tooltip3,
+        #tooltip4,
+        #tooltip5,
+        #tooltip6 {
+            position: absolute;
+            padding-left: 1%;
+            padding-right: 1%;
+            padding-top: .5%;
+            padding-bottom: .5%;
+            letter-spacing: 1px;
+            text-align: center;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 18px;
+            font-weight: bolder;
+            background: #d6dbdf;
+        }
+
+        /* tooltips for min and max quintiles */
+        #tooltip7,
+        #tooltip8 {
+            position: absolute;
+            padding-left: 1%;
+            padding-right: 1%;
+            padding-top: .5%;
+            padding-bottom: .5%;
+            letter-spacing: 1px;
+            text-align: center;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 18px;
+            font-weight: bolder;
+            background: #d6dbdf;
+            line-height: 135%;
+        }
+
+        a {
+            color: #1b2631;
+            text-decoration: none;
+        }
+
+        /* skeleton css */
+        /* Media Queries
+        /* Larger than mobile */
+        @media (min-width: 400px) {}
+
+        /* Larger than phablet (also point when grid becomes active) */
+        @media (min-width: 550px) {}
+
+        /* Larger than tablet */
+        @media (min-width: 750px) {}
+
+        /* Larger than desktop */
+        @media (min-width: 1000px) {}
+
+        /* Larger than Desktop HD */
+        @media (min-width: 1200px) {}
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- opening text -->
+    <div class="row">
+        <div class="seven columns">
+            <h1> When the Median isn't the Message</h1>
+            <h2> The median is as ubiquitous as data itself. In any given set of numbers, the median is the “middle”
+                value — where half of the numbers fall above it, and half fall below it. It's a tidy figure, not easily
+                skewed by outliers. Consider the median a snapshot, focused on the midpoint and conveniently cropping
+                out the messy highs and lows — an appropriate view for some datasets, but not all. This post explores
+                what gets lost when the median is the message. </h2>
+            <h3> The median provides an especially limited view when it comes to economic data. An ideal dataset to
+                demonstrate this point is the <strong>Consumer Expenditure Survey (CE)</strong>. The CE, a nationwide
+                household survey conducted for the U.S. Bureau of Labor Statistics (BLS), explores how Americans spend
+                their money. The CE's robust data includes information on demographics, incomes, and expenditures — and
+                represents 98% of the US population.<br><br>This post explores the CE data through a series of
+                visualizations:<br><strong><i>30 Years of the Median</i></strong><br> &nbsp;&nbsp;&nbsp;• a 30 year
+                snapshot - capturing
+                median spending from 1990 to 2019<br><strong><i>2019 — The Median and Beyond</i></strong>
+                <br>&nbsp;&nbsp;&nbsp;• a closer
+                look at 2019 spending, broken down by income quintile<br><strong><i>Highs and Lows of 2019</i></strong>
+                <br>&nbsp;&nbsp;&nbsp;• a zoomed-in comparison of the lowest and highest quintiles of 2019<br><br>
+            </h3>
+        </div>
+    </div>
+
+    <!-- add a separating rule-->
+    <hr size="3" width="90%" color="white">
+
+
+    <!-- VISUALIZATION #1 / STACKED AREA CHART -->
+    <div class="row">
+        <div class="seven columns">
+            <h2 class="subtitle"> 30 Years of the Median</h2>
+            <h3 class="intro">The below visualization displays annual median spending, as broken down into eight
+                categories: housing, food, transportation, healthcare, apparel, education, entertainment, and
+                miscellaneous. In 2019, Americans on average spent 87% of their earnings on all expenses — which is an
+                improvement over 1990, when they spent 98% — but, yet, not as prosperous as 2010-2011, when a mere 79%
+                of earnings would get you everything you need. All and all, though, this chart paints a rosy picture of
+                the past 30 years. Spending does not fluctuate wildly, and at no point is anyone living beyond their
+                means.</h3>
+            <h2 class="subtitle" id="vizHead">Median Annual Expenditures (1990-2019)</h2>
+            <h5><strong><i>roll over bars for detailed information</i></strong></h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="seven columns">
+            <div id="area">
+
+                <script type="text/javascript">
+
+                    // set dimensions and margins of graph
+                    const margin =
+                        { top: 50, right: 30, bottom: 25, left: 25 },
+                        width = 800 - margin.left - margin.right,
+                        height = 600 - margin.top - margin.bottom;
+
+                    // append svg object to page
+                    const svg = d3.select("#area")
+                        .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+                    // parse data
+                    d3.csv("files/median-average_1990-2019-final2.csv").then(function (data) {
+
+                        // list of subgroups = header of the csv file
+                        const subgroups = data.columns.slice(1)
+
+                        // list of groups = value of the first column called group
+                        const groups = data.map(d => d.date)
+
+                        // add X axis
+                        const x = d3.scaleBand()
+                            .domain(groups)
+                            .range([0, width])
+                            .padding([0.3])
+                        svg.append("g")
+                            .attr("transform", `translate(0, ${height})`)
+                            .call(d3.axisBottom(x).tickSizeOuter(0))
+                            .attr("class", "x path")
+                            .attr("class", "x tick line")
+                            .attr("class", "x label")
+                            .attr("transform", "translate(0," + (height + 2) + ")");
+
+
+
+                        // add Y axis
+                        const y = d3.scaleLinear()
+                            .domain([0, 100])
+                            .range([height, 0]);
+                        // add y axis label
+                        svg.append("text")
+                            .attr("class", "yTitle")
+                            .attr("text-anchor", "end")
+                            .attr("x", width - 665)
+                            .attr("y", height - 550)
+                            .attr("fill", "#34495e")
+                            .text("percent of spending");
+
+                        // implement left axis
+                        svg.append("g")
+                            .call(d3.axisLeft(y))
+                            // reference CSS in above code
+                            .attr("class", "y path")
+                            // remove the "." from y.label
+                            .attr("class", "y tick line")
+                            .attr("class", "y label")
+                            .attr("transform", "translate(" + margin.left - ",10)")
+                            .call(y);
+
+                        // color palette = one color per subgroup
+                        const color = d3.scaleOrdinal(['#5a6e80', '#294055', '#bd8bbe', '#863895', '#50215d', '#f2675e', ' #d02927', '#6d1710'])
+                            .domain(subgroups)
+
+                        // stack the data per subgroup
+                        const stackedData = d3.stack()
+                            .keys(subgroups)
+                            (data)
+
+                        const tooltip1 = d3.select("#area")
+                            .append("div", "area")
+                            .style("opacity", 0)
+                            .attr("id", "tooltip1")
+
+                        // functions that change the tooltip when user hover / move / leave a cell
+                        const mouseover = function (event, d) {
+                            const subgroupName = d3.select(this.parentNode).datum().key;
+                            const subgroupValue = d.data[subgroupName];
+                            tooltip1
+                                .html(subgroupName + "<br>" + subgroupValue + "%")
+                                .style("opacity", 1)
+                                .transition()
+                                .duration(500)
+                        }
+
+                        const mousemove = function (event, d) {
+                            tooltip1
+                                //.style("transform", "translateY(-55%)")
+                                .style("transform", d => "translate(" + 0 + ")")
+                                .style("left", (event.pageX + 5) + "px")
+                                .style("top", (event.pageY + 5) + "px")
+                        }
+
+                        const mouseleave = function (event, d) {
+                            tooltip1
+                                .style("opacity", 0)
+                        }
+
+                        // show the bars
+                        svg.append("g")
+                            .selectAll("g")
+                            // enter stack data = loop key per key = group per group
+                            .data(stackedData)
+                            .join("g")
+                            .attr("fill", d => color(d.key))
+                            .selectAll("rect")
+
+                            // enter a second time = loop subgroup per subgroup to add all rectangles
+                            .data(d => d)
+                            .join("rect")
+                            .attr("x", d => x(d.data.date))
+                            .attr("y", d => y(d[1]))
+                            .attr("height", d => y(d[0]) - y(d[1]))
+                            .attr("width", x.bandwidth())
+
+                            .on("mouseover", mouseover)
+                            .on("mousemove", mousemove)
+                            .on("mouseleave", mouseleave)
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- LEGEND HERE -->
+        <div class="five columns">
+            <div id="legend">
+
+                <svg width="200" height="675" id="svg1A"></svg>
+                <script type="text/javascript">
+
+                    const svg1A = d3.select("#svg1A")
+
+                    // create list of keys
+                    const keys1A = ["housing", "food", "transportation", "healthcare", "apparel", "education", "entertainment", "miscellaneous"]
+
+                    // chart color scale
+                    const myColor1A = d3.scaleOrdinal()
+                        .domain(keys1A)
+                        .range(['#6d1710', '#d02927', '#f2675e', '#50215d', '#863895', '#bd8bbe', '#294055', '#5a6e80']);
+
+                    // legend colors
+                    const size = 15
+                    svg1A.selectAll("mydots")
+                        .data(keys1A)
+                        .enter()
+                        .append("rect")
+                        .attr("x", 0)
+                        .attr("y", function (d, i) { return 90 + i * (size + 10) })
+                        .attr("width", size)
+                        .attr("height", size)
+                        .style("fill", (d, i) => myColor1A(i));
+
+                    // legend labels
+                    svg1A.selectAll("mylabels")
+                        .data(keys1A)
+                        .enter()
+                        .append("text")
+                        .attr("x", 10 + size * 1.2)
+                        .attr("y", function (d, i) { return 90 + i * (size + 10) + (size / 2) })
+                        .style("fill", "#1b2631")
+                        .text(function (d) { return d })
+                        .attr("class", "legend_labels")
+                        .attr("text-anchor", "left")
+                        .style("alignment-baseline", "middle");
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <!-- add a separating rule-->
+    <hr size="3" width="90%" color="white">
+
+    <!-- VISUALIZATION #2 QUINTILES -->
+    <div class="row">
+        <div class="seven columns">
+            <h2 class="subtitle"> 2019 — the Median and Beyond</h2>
+            <h3 class="intro">Fortunately, the CE data goes beyond the median and is also available in income quintiles
+                — each representing one fifth of the total population. The median is essentially the third (middle)
+                quintile. The below visualization displays the income brackets both below and above the middle -
+                depicting a more complete snapshot of Americans' living expenses.
+                <br><br><i>It should be noted that the CE captures data from individuals regarding their household
+                    expenses — but does not take into account when multiple individuals are contributing to a single
+                    household. I mention this finer point as a way to explain how someone's expenditures can be as much
+                    as 135% more than their income.</i>
+            </h3>
+            <h2 class="subtitle" id="vizHead"> 2019 Annual Expenditures by Income Quintiles </h2>
+            <h5><strong><i>roll over dots for detailed information</i></strong></h5>
+        </div>
+    </div>
+
+    <!-- QUINTILES HERE -->
+    <div class="row">
+        <!-- lowest 20 percent -->
+        <div class="two columns" id="leftcol">
+            <h2 class="subtitle"> Lowest <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $12,236 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $28,761 </strong> </h4>
+            <div id="quint1">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg2 = d3.select("svg2");
+                    const w2 = 250;
+                    const h2 = 500;
+
+                    // 2 colors for in budget / over budget
+                    const myColor2 = d3.scaleOrdinal()
+                        .range(['#182632', '#d4ac0d']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget01A.csv").then(function (dataset2) {
+
+                        // format data 
+                        dataset2.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                            d.budget = d.budget;
+                        });
+
+                        const maxX2 = d3.max(dataset2, d => d.xx + 5);
+                        const maxY2 = d3.max(dataset2, d => d.yy + 5);
+                        const padding2 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale2 = d3.scaleLinear()
+                            .domain([0, maxX2])
+                            .range([padding2, w2 - padding2]);
+                        const newYScale2 = d3.scaleLinear()
+                            .domain([0, maxY2])
+                            // do not invert y-axis
+                            .range([padding2, h2 - padding2]);
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip2 = d3.select("body")
+                            .append("div", "quint1")
+                            .attr("id", "tooltip2")
+                            .style("opacity", 1);
+
+                        // create SVG 
+                        const svg2 = d3.select("#quint1")
+                            .append("svg", "svg2")
+                            .attr("width", w2)
+                            .attr("height", h2);
+
+                        // add circles to SVG to visualize data 
+                        svg2.selectAll("circle")
+                            .data(dataset2)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale2(d.xx))
+                            .attr("cy", d => newYScale2(d.yy))
+                            .attr("r", 5)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor2(d.budget))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip2")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                tooltip2.html(d.budget);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip2")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip2")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- second 20 percent -->
+        <div class="two columns">
+            <h2 class="subtitle"> Second <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $32,945 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $40,424 </strong> </h4>
+            <div id="quint2">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg3 = d3.select("svg3");
+                    const w3 = 250;
+                    const h3 = 500;
+
+                    // 2 colors for in budget / over budget
+                    const myColor3 = d3.scaleOrdinal()
+                        .range(['#182632', '#d4ac0d', '#d6dbdf', '#d6dbdf']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget02B.csv").then(function (dataset3) {
+
+                        // format data 
+                        dataset3.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                            d.budget = d.budget;
+                        });
+
+                        const maxX3 = d3.max(dataset3, d => d.xx + 5);
+                        const maxY3 = d3.max(dataset3, d => d.yy + 5);
+                        const padding3 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale3 = d3.scaleLinear()
+                            .domain([0, maxX3])
+                            .range([padding3, w3 - padding3]);
+                        const newYScale3 = d3.scaleLinear()
+                            .domain([0, maxY3])
+                            // do not invert y-axis
+                            .range([padding3, h3 - padding3]);
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip3 = d3.select("body")
+                            .append("div", "quint2")
+                            .attr("id", "tooltip3")
+                            .style("opacity", 0);
+
+                        // create SVG 
+                        const svg3 = d3.select("#quint2")
+                            .append("svg", "svg3")
+                            .attr("width", w3)
+                            .attr("height", h3);
+
+                        // add circles to SVG to visualize data 
+                        svg3.selectAll("circle")
+                            .data(dataset3)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale3(d.xx))
+                            .attr("cy", d => newYScale3(d.yy))
+                            .attr("r", 5)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor3(d.budget))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip3")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                tooltip3.html(d.budget);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip3")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip3")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- third 20 percent -->
+        <div class="two columns">
+            <h2 class="subtitle"> Third <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $53,123 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $52,988 </strong> </h4>
+            <div id="quint3">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg4 = d3.select("svg4");
+                    const w4 = 250;
+                    const h4 = 500;
+
+                    // colors for 9 spending categories
+                    const myColor4 = d3.scaleOrdinal()
+                        .range(['#182632', '#d6dbdf']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget03B.csv").then(function (dataset4) {
+
+                        // format data 
+                        dataset4.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                            d.budget = d.budget;
+                        });
+
+                        const maxX4 = d3.max(dataset4, d => d.xx + 5);
+                        const maxY4 = d3.max(dataset4, d => d.yy + 5);
+                        const padding4 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale4 = d3.scaleLinear()
+                            .domain([0, maxX4])
+                            .range([padding4, w4 - padding4]);
+                        const newYScale4 = d3.scaleLinear()
+                            .domain([0, maxY4])
+                            // do not invert y-axis
+                            .range([padding4, h4 - padding4]);
+
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip4 = d3.select("body")
+                            .append("div", "quint3")
+                            .attr("id", "tooltip4")
+                            .style("opacity", 0);
+
+                        // create SVG 
+                        const svg4 = d3.select("#quint3")
+                            .append("svg", "svg4")
+                            .attr("width", w4)
+                            .attr("height", h4);
+
+                        // add circles to SVG to visualize data 
+                        svg4.selectAll("circle")
+                            .data(dataset4)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale4(d.xx))
+                            .attr("cy", d => newYScale4(d.yy))
+                            .attr("r", 5)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor4(d.budget))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip4")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                tooltip4.html(d.budget);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip4")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip4")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- fourth 20 percent -->
+        <div class="two columns">
+            <h2 class="subtitle"> Fourth <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $83,864 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $71,090 </strong> </h4>
+            <div id="quint4">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg5 = d3.select("svg5");
+                    const w5 = 250;
+                    const h5 = 500;
+
+                    // 2 colors for in budget / over budget
+                    const myColor5 = d3.scaleOrdinal()
+                        .range(['#182632', '#fdfefe', '#d6dbdf']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget04B.csv").then(function (dataset5) {
+
+                        // format data 
+                        dataset5.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                            d.budget = d.budget;
+                        });
+
+                        const maxX5 = d3.max(dataset5, d => d.xx + 5);
+                        const maxY5 = d3.max(dataset5, d => d.yy + 5);
+                        const padding5 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale5 = d3.scaleLinear()
+                            .domain([0, maxX5])
+                            .range([padding5, w5 - padding5]);
+                        const newYScale5 = d3.scaleLinear()
+                            .domain([0, maxY5])
+                            // do not invert y-axis
+                            .range([padding5, h5 - padding5]);
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip5 = d3.select("body")
+                            .append("div", "quint4")
+                            .attr("id", "tooltip5")
+                            .style("opacity", 0);
+
+                        // create SVG 
+                        const svg5 = d3.select("#quint4")
+                            .append("svg", "svg5")
+                            .attr("width", w5)
+                            .attr("height", h5);
+
+                        // add circles to SVG to visualize data 
+                        svg5.selectAll("circle")
+                            .data(dataset5)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale5(d.xx))
+                            .attr("cy", d => newYScale5(d.yy))
+                            .attr("r", 5)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor5(d.budget))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip5")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                tooltip5.html(d.budget);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip5")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip5")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- highest 20 percent -->
+        <div class="two columns">
+            <h2 class="subtitle"> Highest <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $174,777 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $121,533 </strong> </h4>
+            <div id="quint5">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg6 = d3.select("svg6");
+                    const w6 = 250;
+                    const h6 = 500;
+
+                    // 2 colors for in budget / over budget
+                    const myColor6 = d3.scaleOrdinal()
+                        .range(['#182632', '#fdfefe', '#d6dbdf']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget05B.csv").then(function (dataset6) {
+
+                        // format data 
+                        dataset6.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                            d.budget = d.budget;
+                        });
+
+                        const maxX6 = d3.max(dataset6, d => d.xx + 5);
+                        const maxY6 = d3.max(dataset6, d => d.yy + 5);
+                        const padding6 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale6 = d3.scaleLinear()
+                            .domain([0, maxX6])
+                            .range([padding6, w6 - padding6]);
+                        const newYScale6 = d3.scaleLinear()
+                            .domain([0, maxY6])
+                            // do not invert y-axis
+                            .range([padding6, h6 - padding6]);
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip6 = d3.select("body")
+                            .append("div", "#quint5")
+                            .attr("id", "tooltip6")
+                            .style("opacity", 0);
+
+                        // create SVG 
+                        const svg6 = d3.select("#quint5")
+                            .append("svg", "svg5")
+                            .attr("width", w6)
+                            .attr("height", h6);
+
+                        // add circles to SVG to visualize data 
+                        svg6.selectAll("circle")
+                            .data(dataset6)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale6(d.xx))
+                            .attr("cy", d => newYScale6(d.yy))
+                            .attr("r", 5)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor6(d.budget))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip6")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                tooltip6.html(d.budget);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip6")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip6")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- add a separating rule-->
+    <hr size="3" width="90%" color="white">
+
+    <!-- DETAILED QUINTILES HERE -->
+    <div class="row">
+        <div class="seven columns">
+            <h2 class="subtitle"> The Highs and Lows of 2019 </h2>
+            <h3 class="intro">Comparing detailed spending for the lowest and highest quintiles offers further insight
+                into income inequality. Expenditures on housing differ dramatically, with the lowest earners spending
+                94% of their income on housing, versus the 21% spend by the highest earners.</h3>
+            <h2 class="subtitle" id="vizHead"> 2019 Annual Expenditures: Lowest vs. Highest Quintile </h2>
+            <h5><strong><i>roll over dots for detailed information</i></strong></h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- lowest 20 percent -->
+        <div class="three columns" id="indent">
+            <h2 class="subtitle"> Lowest <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $12,236 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $28,761 </strong> </h4>
+            <h4 style="color:#004463;"><strong>135% over budget</strong></h4>
+
+            <div id="min">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg7 = d3.select("svg7");
+                    const w7 = 300;
+                    const h7 = 600;
+
+                    // colors for 9 spending categories
+                    const myColor7 = d3.scaleOrdinal()
+                        .range(['#6d1710', '#d02927', '#f2675e', '#50215d', '#863895', '#bd8bbe', '#294055', '#5a6e80']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget01.csv").then(function (dataset7) {
+
+                        // format data 
+                        dataset7.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                        });
+
+                        const maxX7 = d3.max(dataset7, d => d.xx + 5);
+                        const maxY7 = d3.max(dataset7, d => d.yy + 5);
+                        const padding7 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale7 = d3.scaleLinear()
+                            .domain([0, maxX7])
+                            .range([padding7, w7 - padding7]);
+                        const newYScale7 = d3.scaleLinear()
+                            .domain([0, maxY7])
+                            // do not invert y-axis
+                            .range([padding7, h7 - padding7]);
+
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip7 = d3.select("body")
+                            .append("div", "min")
+                            .attr("id", "tooltip7")
+                            .style("opacity", 0);
+
+                        // create SVG 
+                        const svg7 = d3.select("#min")
+                            .append("svg", "svg7")
+                            .attr("width", w7)
+                            .attr("height", h7);
+
+                        // add circles to SVG to visualize data 
+                        svg7.selectAll("circle")
+                            .data(dataset7)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale7(d.xx))
+                            .attr("cy", d => newYScale7(d.yy))
+                            .attr("r", 7)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor7(d.spending))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip7")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                // setting the html here for the <br>
+                                tooltip7.html(d.spending + "<br>" + d.total);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip7")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip7")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- highest 20 percent -->
+        <div class="three columns" id="indent">
+            <h2 class="subtitle"> Highest <br> 20% </h2>
+            <h4> income after taxes <br> <strong> $174,777 </strong> </h4>
+            <h4> average annual <br> expenditures <br> <strong> $121,533 </strong> </h4>
+            <h4 style="color:#004463;"><strong>29% under budget</strong></h4>
+
+            <div id="max">
+
+                <script type="text/javascript">
+
+                    // declare chart width and height 
+                    const svg8 = d3.select("svg8");
+                    const w8 = 300;
+                    const h8 = 600;
+
+                    // colors for 9 spending categories
+                    const myColor8 = d3.scaleOrdinal()
+                        .range(['#6d1710', '#d02927', '#f2675e', '#50215d', '#863895', '#bd8bbe', '#294055', '#5a6e80', '#d6dbdf']);
+
+                    // data with CVS import
+                    // 2019 spending / budget / lowest quintile
+                    d3.csv("files/2019-budget05Z.csv").then(function (dataset8) {
+
+                        // format data 
+                        dataset8.forEach(function (d) {
+                            // spening category
+                            d.spending = d.spending
+                            // dot position // add + sign to read in data as number
+                            d.xx = +d.xx;
+                            d.yy = +d.yy;
+                            d.total = d.total;
+                        });
+
+                        const maxX8 = d3.max(dataset8, d => d.xx + 5);
+                        const maxY8 = d3.max(dataset8, d => d.yy + 5);
+                        const padding8 = 30;
+
+                        // create responsive scales for x and y 
+                        // (to make them responsive to our dataset growing: using d3.max)
+                        const newXScale8 = d3.scaleLinear()
+                            .domain([0, maxX8])
+                            .range([padding8, w8 - padding8]);
+                        const newYScale8 = d3.scaleLinear()
+                            .domain([0, maxY8])
+                            // do not invert y-axis
+                            .range([padding8, h8 - padding8]);
+
+
+                        // tooltip (positioned outside of SVG)
+                        const tooltip8 = d3.select("body")
+                            .append("div", "max")
+                            .attr("id", "tooltip8")
+                            .style("opacity", 0);
+
+                        // create SVG 
+                        const svg8 = d3.select("#max")
+                            .append("svg", "svg8")
+                            .attr("width", w8)
+                            .attr("height", h8);
+
+                        // add circles to SVG to visualize data 
+                        svg8.selectAll("circle")
+                            .data(dataset8)
+                            .enter()
+                            .append("circle")
+                            .attr("cx", d => newXScale8(d.xx))
+                            .attr("cy", d => newYScale8(d.yy))
+                            .attr("r", 7)
+                            //.attr("opacity", ".3")
+                            .style("fill", (d, i) => myColor8(d.spending))
+
+                            // tooltip / mouseover / hover
+                            .on("mouseover", (event, d) => {
+                                d3.select("#tooltip8")
+                                    .transition()
+                                    // milliseconds
+                                    .duration(5000)
+                                    .style("opacity", 1)
+                                    // x coordinate of mouse
+                                    .style("left", (event.pageX + 1) + "px")
+                                    // y coordinate of mouse
+                                    .style("top", (event.pageY + 1) + "px")
+                                // setting the html here for the <br>
+                                tooltip8.html(d.spending + "<br>" + d.total);
+                            })
+                            .on("mouseout", (event, d) => {
+                                d3.select("#tooltip8")
+                                    .transition()
+                                    .duration(50)
+                                    .style("opacity", 0);
+                            })
+                            .on("mousemove", (event, d) => {
+                                d3.select("#tooltip8")
+                                    .style("opacity", 1)
+                                    .style("left", (event.pageX + 20) + "px")
+                                    .style("top", (event.pageY + 20) + "px")
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="two columns">
+            <div id="legend2">
+                <img src="images/color-key.png" alt="color key">
+            </div>
+        </div>
+    </div>
+
+    <!-- add a separating rule-->
+    <hr size="3" width="90%" color="white">
+
+    <!-- CONCLUDING THOUGHTS -->
+    <div class="row">
+        <div class="seven columns">
+            <h2 class="subtitle"> Median: One Size Doesn't Fit All </h2>
+            <h3 class="intro">The intention of this post is not to disregard the median entirely, but, rather, to create
+                an awareness of the median's limitations. Next time the median makes an appearance in an article or
+                visualization, pause to consider what has been lost by focusing only on the middle. <br><br></h3>
+            <h5> <strong>notes</strong> <br>1. The BLS provides aggregated spending data by income quintile. Several
+                calcualtions were necessary to reveal spending at the consumer level.<br>2. In order to simplify the
+                visualizations, some CE spending categories were combined: 'reading' was added to 'entertainment',
+                'personal care' was added to 'apparel, and 'alcohol and tobacco', 'cash contributions', and 'personal
+                insurance / pensions' were all added to 'miscellaneous'.</h5>
+            <h5> <strong>source</strong> <br><a href="https://www.bls.gov/cex/tables.htm" target="_blank">U.S. Bureau of
+                    Labor Statistics: Consumer Expenditure Surveys</a></h5>
+</body>
+
+</html>
